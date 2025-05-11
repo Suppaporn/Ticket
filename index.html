@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Father Ticket</title>
+    <style>
+        .coupon {
+            display: inline-block;
+            margin: 10px;
+            cursor: pointer;
+        }
+        img {
+	width: 40rem;
+	height: 11rem;
+        }
+    </style>
+</head>
+<body>
+    <h1>Father Ticket</h1>
+ <div id="coupons">
+
+</div>
+
+<div id="popup" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%;
+     background:rgba(0,0,0,0.5); align-items:center; justify-content:center;">
+
+    <div style="background:#fff; padding:20px; border-radius:10px; text-align:center;">
+        <p>คุณต้องการใช้คูปองนี้หรือไม่?</p>
+        <button id="confirmYes">ใช่</button>
+        <button id="confirmNo">ไม่ใช่</button>
+    </div>
+</div>
+
+<script>
+    const usedCoupons = JSON.parse(localStorage.getItem('usedCoupons')) || [];
+    const couponsContainer = document.getElementById('coupons');
+    const popup = document.getElementById('popup');
+    const confirmYes = document.getElementById('confirmYes');
+    const confirmNo = document.getElementById('confirmNo');
+
+    let currentCoupon = null; // เก็บคูปองที่กำลังกดอยู่
+
+    for (let i = 1; i <= 8; i++) {
+	console.log("i",i)
+        if (usedCoupons.includes(i.toString())) continue;
+
+        const couponDiv = document.createElement('div');
+        couponDiv.className = 'coupon';
+        couponDiv.setAttribute('data-id', i);
+
+        const img = document.createElement('img');
+        img.src = `coupon${i}.png`;
+        img.alt = `Coupon ${i}`;
+
+
+        couponDiv.appendChild(img);
+        couponsContainer.appendChild(couponDiv);
+
+        // เมื่อคลิกคูปอง ให้แสดง popup
+	couponDiv.addEventListener('click', () => {
+    	currentCoupon = { element: couponDiv, id: i.toString() };
+    	popup.style.display = 'flex'; // แสดง popup เฉพาะตอนคลิกเท่านั้น
+	});
+
+    }
+
+    // ถ้ากด "ใช่" = ใช้คูปอง
+    confirmYes.addEventListener('click', () => {
+        if (currentCoupon) {
+            usedCoupons.push(currentCoupon.id);
+            localStorage.setItem('usedCoupons', JSON.stringify(usedCoupons));
+            currentCoupon.element.style.display = 'none';
+            popup.style.display = 'none';
+        }
+    });
+
+    // ถ้ากด "ไม่ใช่" = ปิด popup
+    confirmNo.addEventListener('click', () => {
+        currentCoupon = null;
+        popup.style.display = 'none';
+    });
+</script>
+
+</body>
+</html>
